@@ -1,6 +1,6 @@
 # ChatLinux 文档
 
-ChatLinux 是 ChatArch 系列 Python 包。这个文档站提供长期维护的使用说明、CLI 树、能力地图和 Python 接口入口。生成模板后，请把占位说明替换为当前包已经实现、探索过或计划中的真实内容。
+ChatLinux 是 ChatArch 系列 Linux 运维包。当前首个业务能力是 **fleet 状态缓存 CLI**：用 ChatArch 内部配置 track 服务器，通过 Ansible 刷新常规公共指标，并从本地缓存快速查看状态。
 
 站点入口：<https://arch.gh.wzhecnu.cn/ChatLinux/>
 
@@ -8,21 +8,20 @@ ChatLinux 是 ChatArch 系列 Python 包。这个文档站提供长期维护的�
 
 | 场景 | 文档 |
 | --- | --- |
-| 第一次安装、运行命令行、确认包可用 | [CLI 树](cli-tree.md) |
+| 第一次安装、初始化 `.cube` track、刷新/查看缓存 | [快速开始](quickstart.md) |
+| 查看当前真实 CLI 命令树和 shell 用法 | [CLI 树](cli-tree.md) |
 | 校对当前包有哪些一等能力和边界 | [能力地图](capability-map.md) |
 | 从 Python 代码调用包能力 | [Python 接口树](interface-tree.md) |
-
-## 文档栏目组织
-
-当前模板只保留长期有用的文档入口，不生成计划类占位页：
-
-- **CLI 树**：最直观的命令展示入口，包含真实命令树、状态和更新清单。
-- **能力地图**：当前一等能力、边界和不负责的范围。
-- **接口树**：命令行背后的可 import Python 接口。
 
 ## 核心入口
 
 <div class="grid cards" markdown>
+
+- **快速开始**
+
+    初始化 `fleet.json`，刷新 `.cube` 状态，并通过缓存快速查看。
+
+    [查看快速开始](quickstart.md)
 
 - **CLI 树**
 
@@ -44,11 +43,18 @@ ChatLinux 是 ChatArch 系列 Python 包。这个文档站提供长期维护的�
 
 </div>
 
-## 文档状态约定
+## 当前默认路径
 
-- **已实现**：代码、测试或 CLI 路径已经存在。
-- **已验证**：已经通过本地 smoke、CI 或真实服务实践验证。
-- **未实现**：只写边界和计划，不写成可执行教程；实现并验证后再升级为操作文档。
+默认本地状态根：`CHATLINUX_HOME` > `$CHATARCH_HOME/chatlinux` > `~/.chatarch/chatlinux`。默认落点：
+
+```text
+~/.chatarch/chatlinux/fleet.json
+~/.chatarch/chatlinux/cache/<track>-status.json
+~/.chatarch/chatlinux/runtime/fleet-inventory.ini
+~/.chatarch/chatlinux/runtime/fleet_probe.py
+```
+
+`show` / `status` 默认只读缓存；`refresh` 和 `status --refresh` 才会访问服务器。`init --json` 会输出完整 `state_paths`，用于确认 config/cache/runtime 都仍在 ChatArch 内部路径。
 
 ## 本地预览
 
@@ -57,4 +63,4 @@ python -m pip install -e ".[docs]"
 mkdocs serve
 ```
 
-英文首页见站点语言入口：<https://arch.gh.wzhecnu.cn/ChatLinux/en/>。缺少英文翻译的专题页会按 i18n fallback 回退到中文页面。
+英文首页见站点语言入口：<https://arch.gh.wzhecnu.cn/ChatLinux/en/>。
