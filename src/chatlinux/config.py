@@ -8,7 +8,7 @@ class ChatlinuxConfig(BaseEnvConfig):
 
     _title = "ChatLinux Configuration"
     _aliases = ["chatlinux"]
-    _storage_dir = "Chatlinux"
+    _storage_dir = "chatlinux"
 
     @classmethod
     def test(cls) -> None:

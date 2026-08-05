@@ -1,6 +1,6 @@
 # ChatLinux Docs
 
-ChatLinux is a ChatArch Python package. This documentation site should hold long-lived usage notes, a command map, a capability map, and Python interface entry points. After scaffolding, replace placeholders with behavior that is actually implemented, explored, or planned for this package.
+ChatLinux is a ChatArch Linux operations package. Its first domain capability is a **fleet status cache CLI**: track servers with ChatArch-owned config, refresh common metrics through Ansible, and read the normalized local cache quickly from a shell.
 
 Site entry: <https://arch.gh.wzhecnu.cn/ChatLinux/en/>
 
@@ -8,21 +8,20 @@ Site entry: <https://arch.gh.wzhecnu.cn/ChatLinux/en/>
 
 | Scenario | Document |
 | --- | --- |
-| Install the package, run the CLI, and confirm it works | [CLI Tree](cli-tree.md) |
+| Install, initialize the `.cube` track, refresh, and read cache | [Quick Start](quickstart.md) |
+| Inspect the implemented CLI tree and shell usage | [CLI Tree](cli-tree.md) |
 | Check first-class capabilities and current boundaries | [Capability Map](capability-map.md) |
 | Call package behavior directly from Python | [Python Interface Tree](interface-tree.md) |
-
-## Documentation Organization
-
-This template keeps only durable documentation entry points; it does not generate a plan placeholder:
-
-- **CLI tree**: the most direct command entry point, including the real command tree, status, and update checklist.
-- **Capability map**: first-class capabilities, boundaries, and out-of-scope areas.
-- **Interface tree**: importable Python APIs behind the CLI.
 
 ## Primary Entry Points
 
 <div class="grid cards" markdown>
+
+- **Quick Start**
+
+    Initialize `fleet.json`, refresh `.cube` status, and read the cached result quickly.
+
+    [Open Quick Start](quickstart.md)
 
 - **CLI Tree**
 
@@ -44,11 +43,18 @@ This template keeps only durable documentation entry points; it does not generat
 
 </div>
 
-## Documentation Status
+## Current Default Paths
 
-- **Implemented**: code, tests, or CLI routes exist.
-- **Verified**: covered by local smoke, CI, or real-service practice.
-- **Not implemented**: keep as boundary and planning notes only; turn into operation docs after implementation and validation.
+Default local state root: `CHATLINUX_HOME` > `$CHATARCH_HOME/chatlinux` > `~/.chatarch/chatlinux`. Default paths:
+
+```text
+~/.chatarch/chatlinux/fleet.json
+~/.chatarch/chatlinux/cache/<track>-status.json
+~/.chatarch/chatlinux/runtime/fleet-inventory.ini
+~/.chatarch/chatlinux/runtime/fleet_probe.py
+```
+
+`show` / `status` reads cache by default; only `refresh` and `status --refresh` contact hosts. `init --json` reports the full `state_paths` object so config/cache/runtime placement is directly auditable.
 
 ## Local Preview
 
@@ -57,4 +63,4 @@ python -m pip install -e ".[docs]"
 mkdocs serve
 ```
 
-The Chinese home page is available at <https://arch.gh.wzhecnu.cn/ChatLinux/>. Topic pages without English translations fall back to the default Chinese content through the i18n plugin.
+The Chinese home page is available at <https://arch.gh.wzhecnu.cn/ChatLinux/>.

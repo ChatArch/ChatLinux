@@ -6,17 +6,21 @@ Use this page to check which first-class capabilities `ChatLinux` currently owns
 
 <div class="grid cards" markdown>
 
+- **Fleet Status Cache**
+
+    Track a set of Linux servers with a config file, refresh common metrics through Ansible, and keep config, cache, and runtime inventory/probe files under ChatArch home.
+
 - **CLI Entry**
 
-    `chatlinux --help` and `chatlinux --version` are the default verification entry points.
+    `chatlinux fleet init/refresh/show/status` provides shell-friendly operations; `show` reads the local cache by default.
 
 - **Python API**
 
-    Substantive behavior should live in importable Python functions, classes, or service layers rather than only in Click callbacks.
+    Substantive behavior lives in `chatlinux.fleet`; Click commands only parse arguments and render output.
 
 - **Config and Environment**
 
-    ChatEnv integration is enabled by default; stable, shared configuration belongs in `config.py`.
+    The default state root is `CHATLINUX_HOME` > `$CHATARCH_HOME/chatlinux` > `~/.chatarch/chatlinux/`, containing `fleet.json`, `cache/`, and `runtime/`. `init --json` reports the full `state_paths` object.
 
 </div>
 
@@ -24,12 +28,25 @@ Use this page to check which first-class capabilities `ChatLinux` currently owns
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| CLI base entry | Implemented | The template generates a Click group, `--version`, and a base test. |
-| ChatEnv provider | Implemented | The template generates `config.py` and a `chatenv.configs` entry point. |
-| Business commands | Not implemented | Add these from the real package domain; do not fake future commands in the template. |
+| CLI base entry | Implemented | Click group, `--version`, and base tests. |
+| ChatEnv provider | Implemented | `config.py` and the `chatenv.configs` entry point remain discoverable by ChatEnv. |
+| Fleet sample config | Implemented | `chatlinux fleet init --sample cube` writes the `.cube` track. |
+| Fleet refresh | Implemented | `chatlinux fleet refresh --track cube` renders Ansible inventory/probe files, runs read-only checks, and writes cache. |
+| Fleet cache view | Implemented | `show` / `status` read `cache/<track>-status.json` without contacting hosts. |
+| JSON output | Implemented | `init`, `refresh`, `show`, and `status` support `--json`. |
+
+## Current Metrics
+
+- hostname, sample time, uptime, CPU count, and load average;
+- memory total/available and swap total/used;
+- filesystem capacity;
+- GPU information when `nvidia-smi` is available;
+- failed systemd unit names from `systemctl --failed`.
 
 ## Out of Scope
 
-- No plan placeholder page is generated.
-- No unimplemented capability should be written as a user operation tutorial.
-- No secret, token, cookie, or Authorization header should appear in README, docs, issues, PR comments, or CI logs.
+- No sudo.
+- No cleanup, restart, or remote repair.
+- No privileged SMART/NVMe lifetime data.
+- Do not document unimplemented features as executable tutorials.
+- Do not print secrets, tokens, cookies, or Authorization headers in README, docs, issues, PR comments, or CI logs.

@@ -1,46 +1,62 @@
-# CLI Capability Map
+# CLI Tree
 
-This page is the compact capability map for the `ChatLinux` CLI. Use it to review which commands are first-class entries and which are still boundary or planned slots. After scaffolding, update it with the real command tree; do not present unimplemented commands as available operations.
-
-Importable Python functions are mapped in [Interface Tree](interface-tree.md). Current package boundaries are tracked in [Capability Map](capability-map.md).
+This page shows the currently implemented `ChatLinux` command tree. Importable Python functions are mapped in [Python Interface Tree](interface-tree.md), and package boundaries are tracked in [Capability Map](capability-map.md).
 
 ## Top-Level Commands
 
 ```text
-chatlinux                  # ChatLinux command-line entry
-├── --help                     # Show CLI help and registered commands
-└── --version                  # Print the current package version
+chatlinux                         # ChatLinux command-line entry
+├── --help                            # Show CLI help and registered commands
+├── --version                         # Print the current package version
+└── fleet                             # Manage and view cached fleet status
 ```
 
-## Base Entries
+## Fleet Status Commands
 
 ```text
-chatlinux --help           # Verify the command is installed and inspect the current command tree
-chatlinux --version        # Verify the installed version
+chatlinux fleet                   # Server fleet status command group
+├── --home DIRECTORY                  # Override the ChatLinux state directory; defaults to ~/.chatarch/chatlinux
+├── init                              # Initialize fleet config, cache, and runtime directories
+│   ├── --sample cube                 # Write the ChatArch .cube sample track
+│   ├── --force                       # Overwrite an existing config
+│   └── --json                        # Print machine-readable JSON with full state_paths
+├── refresh                           # Run read-only Ansible checks and write cache
+│   ├── --track cube                  # Select the track to refresh
+│   └── --json                        # Print the full cache JSON
+├── show                              # Show the last cache without contacting hosts
+│   ├── --track cube                  # Select the track to read
+│   └── --json                        # Print cache JSON
+└── status                            # Same as show by default; can refresh first
+    ├── --track cube                  # Select the track
+    ├── --refresh                     # Run refresh before display
+    └── --json                        # Print JSON
 ```
 
-`--help` and `--version` are the scaffolded verification entries. After adding business commands, follow the ChatTea CLI tree pattern: split command groups into their own sections and annotate every command line.
+## Common Shell Flow
 
-## Business Command Slots
-
-```text
-chatlinux <group>          # Command group named after real package capability
-├── <command>                  # Explain what this command does
-└── <command>                  # Explain status, boundary, or checkpoint behavior
+```bash
+chatlinux fleet init --sample cube
+chatlinux fleet refresh --track cube
+chatlinux fleet show --track cube
 ```
 
-This is a structural placeholder, not a promise of future capability. Only document a command as implemented after the command, Python function, and tests exist.
+Use task-local state:
+
+```bash
+chatlinux fleet --home ./playground/chatlinux-home init --sample cube --json
+chatlinux fleet --home ./playground/chatlinux-home status --track cube --refresh
+```
 
 ## Status Contract
 
 | Status | Meaning |
 | --- | --- |
 | Implemented | Command, function, and tests exist |
-| Verified | Covered by CI, local smoke, or real-service practice |
+| Verified | Covered by local tests, shell smoke, or a real Ansible refresh |
 | Planned / checkpoint | Keep only boundary notes; do not write operation tutorials before implementation |
 
-## Implementation Contract
+## Update Checklist
 
-- Every implemented command must map back to a Python function, class, or service layer.
-- If a command writes remote state, document credentials, permissions, dry-run/checkpoint behavior, or confirmation boundaries.
-- When adding a command, update README, the interface tree, capability map, tests, and related flow pages together.
+- When adding commands, update the CLI tree, capability map, interface tree, README, tests, and changelog together.
+- Commands that contact remote hosts must document whether they are read-only, whether they use sudo, and whether they write cache or remote state.
+- `show` / `status` reads local cache by default; only `refresh` and `status --refresh` contact hosts.
