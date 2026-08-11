@@ -78,7 +78,7 @@ chatlinux fleet --home ./playground/chatlinux-home status --track cube --refresh
 
 ## 命令行规范
 
-这个包依赖 `chatstyle>=0.1.0,<0.2.0` 和 `chatenv>=0.2.0,<0.3.0`。新增命令应优先使用：
+这个包依赖 `chatstyle>=0.1.0,<0.2.0` 和 `chatenv>=0.2.4,<0.3.0`。新增命令应优先使用：
 
 - `CommandSchema` / `CommandField` 描述输入。
 - `add_interactive_option()` 提供统一 `-i/-I`。

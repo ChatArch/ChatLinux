@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.1 - 2026-08-11
+
+### Added
+
+- Add top-level `chatlinux --tree` generated from the registered Click command surface.
+- Add tests that lock `--help` / `--tree` and the visible `fleet init/refresh/show/status` command tree.
+
+### Changed
+
+- Sync the zh/en CLI tree docs from runtime `render_cli_tree()` output.
+- Tighten docs optional dependency bounds to the strict-build-safe `mkdocs-material<9.7` window.
+- Raise the ChatEnv dependency floor to the currently released `0.2.4` line.
+
 ## 0.2.0 - 2026-08-05
 
 ### Added
