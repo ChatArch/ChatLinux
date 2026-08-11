@@ -2,34 +2,19 @@
 
 这篇文档展示 `ChatLinux` 当前已实现的命令树。命令背后的可 import Python 函数见 [Python 接口树](interface-tree.md)，能力边界见 [能力地图](capability-map.md)。
 
-## 顶层命令
+`chatlinux --tree` 会从 Click 注册表生成真实命令树，release 验收以这个输出为准：
 
 ```text
-chatlinux                         # ChatLinux 命令行入口
-├── --help                            # 显示 CLI 帮助和已注册命令
-├── --version                         # 输出当前包版本
-└── fleet                             # 管理/查看服务器 fleet 状态缓存
-```
-
-## Fleet 状态命令
-
-```text
-chatlinux fleet                   # 服务器 fleet 状态命令组
-├── --home DIRECTORY                  # 覆盖 ChatLinux 状态目录；默认 ~/.chatarch/chatlinux
-├── init                              # 初始化 fleet 配置、cache、runtime 目录
-│   ├── --sample cube                 # 写入 ChatArch .cube sample track
-│   ├── --force                       # 覆盖已有配置
-│   └── --json                        # 输出机器可读 JSON，包含完整 state_paths
-├── refresh                           # 通过 Ansible 只读刷新状态并写缓存
-│   ├── --track cube                  # 选择要刷新的 track
-│   └── --json                        # 输出完整缓存 JSON
-├── show                              # 查看上一次缓存，不访问服务器
-│   ├── --track cube                  # 选择要读取的 track
-│   └── --json                        # 输出缓存 JSON
-└── status                            # 默认等同 show；可选择先刷新
-    ├── --track cube                  # 选择 track
-    ├── --refresh                     # 先运行 refresh 再展示
-    └── --json                        # 输出 JSON
+chatlinux # chatlinux command line interface
+├── --help # Show help for the current command
+├── --version # Show package version
+├── --tree # Print the registered CLI tree
+└── fleet # Track server fleets and view cached health status
+    ├── [--home HOME] # ChatLinux state directory. Defaults to $CHATLINUX_HOME, then $CHATARCH_HOME/chatlinux, then ~/.chatarch/chatlinux
+    ├── init [--sample SAMPLE] --force --json # Initialize a fleet config under the ChatLinux state directory
+    ├── refresh [--track TRACK] --json # Run Ansible read-only checks and update the local cache
+    ├── show [--track TRACK] --json # Show the last cached fleet status without contacting hosts
+    └── status [--track TRACK] --refresh --json # Show cached fleet status, optionally refreshing first
 ```
 
 ## 常用 shell 流程

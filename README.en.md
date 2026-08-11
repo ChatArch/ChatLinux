@@ -78,7 +78,7 @@ chatlinux fleet --home ./playground/chatlinux-home status --track cube --refresh
 
 ## CLI Contract
 
-This package depends on `chatstyle>=0.1.0,<0.2.0` and `chatenv>=0.2.0,<0.3.0`. New commands should prefer:
+This package depends on `chatstyle>=0.1.0,<0.2.0` and `chatenv>=0.2.4,<0.3.0`. New commands should prefer:
 
 - `CommandSchema` / `CommandField` for inputs.
 - `add_interactive_option()` for the shared `-i/-I` switch.
