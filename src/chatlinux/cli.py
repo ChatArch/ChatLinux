@@ -7,106 +7,15 @@ from pathlib import Path
 from typing import Any
 
 import click
+from chatstyle import add_tree_option
 
 from chatlinux import __version__
 from chatlinux.fleet import FleetError, format_table, init_config, load_cache, refresh_track, state_paths
 
 
-def _format_metavar(name: str) -> str:
-    return name.replace("_", "-").upper()
-
-
-def _format_argument(param: click.Argument) -> str:
-    metavar = _format_metavar(param.name)
-    return metavar if param.required else f"[{metavar}]"
-
-
-def _format_option(param: click.Option) -> str:
-    preferred = next((opt for opt in param.opts if opt.startswith("--")), param.opts[0])
-    if param.is_flag or param.flag_value is not None:
-        return preferred
-    metavar = param.metavar or _format_metavar(param.name)
-    return f"{preferred} {metavar}" if param.required else f"[{preferred} {metavar}]"
-
-
-def _command_signature(command: click.Command) -> str:
-    parts: list[str] = []
-    for param in command.params:
-        if isinstance(command, click.Group) and isinstance(param, click.Option):
-            continue
-        if isinstance(param, click.Argument):
-            parts.append(_format_argument(param))
-        elif isinstance(param, click.Option):
-            rendered = _format_option(param)
-            if rendered not in ("--help", "--version", "--tree"):
-                parts.append(rendered)
-    return " " + " ".join(parts) if parts else ""
-
-
-def _short_help(command: click.Command) -> str:
-    return (command.short_help or command.help or "").strip().rstrip(".")
-
-
-def _group_items(group: click.Group) -> list[tuple[str, str | click.Command]]:
-    items: list[tuple[str, str | click.Command]] = []
-    if group is main:
-        items.extend([
-            ("--help", "Show help for the current command"),
-            ("--version", "Show package version"),
-            ("--tree", "Print the registered CLI tree"),
-        ])
-    else:
-        for param in group.params:
-            if isinstance(param, click.Option):
-                rendered = _format_option(param)
-                if rendered != "--help":
-                    items.append((rendered, (param.help or "").strip().rstrip(".")))
-    for name, command in group.commands.items():
-        if command.hidden:
-            continue
-        items.append((name, command))
-    return items
-
-
-def render_cli_tree(root: click.Group | None = None) -> str:
-    """Render the visible registered Click command tree."""
-
-    if root is None:
-        root = main
-    lines = [f"{root.name or 'chatlinux'} # {_short_help(root)}"]
-
-    def walk(items: list[tuple[str, str | click.Command]], prefix: str = "") -> None:
-        for index, (name, item) in enumerate(items):
-            last = index == len(items) - 1
-            branch = "└──" if last else "├──"
-            next_prefix = prefix + ("    " if last else "│   ")
-            if isinstance(item, str):
-                suffix = f" # {item}" if item else ""
-                lines.append(f"{prefix}{branch} {name}{suffix}")
-                continue
-            signature = _command_signature(item)
-            help_text = _short_help(item)
-            suffix = f" # {help_text}" if help_text else ""
-            lines.append(f"{prefix}{branch} {name}{signature}{suffix}")
-            if isinstance(item, click.Group):
-                walk(_group_items(item), next_prefix)
-
-    walk(_group_items(root))
-    return "\n".join(lines)
-
-
-def _tree_callback(ctx: click.Context, _param: click.Parameter, value: bool) -> None:
-    if not value or ctx.resilient_parsing:
-        return
-    if not isinstance(ctx.command, click.Group):
-        raise click.ClickException("--tree is only available on command groups")
-    click.echo(render_cli_tree(ctx.command))
-    ctx.exit()
-
-
 @click.group(name="chatlinux")
 @click.version_option(__version__, prog_name="chatlinux")
-@click.option("--tree", is_flag=True, is_eager=True, expose_value=False, callback=_tree_callback, help="Print the registered CLI tree.")
+@add_tree_option(renderer_options={"root_name": "chatlinux"})
 def main() -> None:
     """chatlinux command line interface."""
     # Prefer ChatStyle helpers for interactive input when a command needs
