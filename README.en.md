@@ -35,6 +35,8 @@ Choose documentation by scenario:
 ```bash
 pip install ChatLinux
 chatlinux --version
+chatlinux --tree
+chatlinux --tree-brief
 chatlinux fleet init --sample cube
 chatlinux fleet refresh --track cube
 chatlinux fleet show --track cube
@@ -78,8 +80,9 @@ chatlinux fleet --home ./playground/chatlinux-home status --track cube --refresh
 
 ## CLI Contract
 
-This package depends on `chatstyle>=0.1.0,<0.2.0` and `chatenv>=0.2.4,<0.3.0`. New commands should prefer:
+This package depends on `chatstyle>=0.2.0,<0.3.0` and `chatenv>=0.2.10,<0.3.0`. New commands should prefer:
 
+- Use `add_tree_option()` on the top-level Click CLI: `--tree` shows parameter signatures by default, while `--tree-brief` keeps only command nodes and descriptions.
 - `CommandSchema` / `CommandField` for inputs.
 - `add_interactive_option()` for the shared `-i/-I` switch.
 - `resolve_command_inputs()` for missing args, defaults, TTY behavior, and validation.
